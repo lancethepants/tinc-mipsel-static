@@ -81,7 +81,7 @@ patch < openssl.patch
 
 ./Configure linux-mipsel \
 -ffunction-sections -fdata-sections  -Wl,--gc-sections \
---prefix=/opts shared zlib zlib-dynamic \
+--prefix=/opt shared zlib zlib-dynamic \
 --with-zlib-lib=$DEST/lib \
 --with-zlib-include=$DEST/include
 
