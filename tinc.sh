@@ -30,6 +30,7 @@ cd zlib-1.2.8
 LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
+CXXFLAGS=$CXXFLAGS \
 CROSS_PREFIX=mipsel-linux- \
 ./configure \
 --prefix=/opt
@@ -49,6 +50,7 @@ cd lzo-2.06
 LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
+CXXFLAGS=$CXXFLAGS \
 $CONFIGURE \
 --enable-shared
 
@@ -100,6 +102,7 @@ cd ncurses-5.9
 LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
+CXXFLAGS=$CXXFLAGS \
 $CONFIGURE \
 --with-shared \
 --disable-database \
@@ -125,6 +128,7 @@ patch < readline.patch
 LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
+CXXFLAGS=$CXXFLAGS \
 $CONFIGURE
 
 $MAKE
@@ -142,6 +146,7 @@ cd tinc-1.1pre9
 LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
+CXXFLAGS=$CXXFLAGS \
 $CONFIGURE \
 --localstatedir=/var \
 --with-zlib=$DEST \
