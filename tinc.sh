@@ -139,11 +139,11 @@ make install DESTDIR=$BASE
 ######## ####################################################################
 
 mkdir $SRC/tinc && cd $SRC/tinc
-$WGET http://www.tinc-vpn.org/packages/tinc-1.1pre9.tar.gz
-tar zxvf tinc-1.1pre9.tar.gz
-cd tinc-1.1pre9
+$WGET http://www.tinc-vpn.org/packages/tinc-1.1pre10.tar.gz
+tar zxvf tinc-1.1pre10.tar.gz
+cd tinc-1.1pre10
 
-LDFLAGS=$LDFLAGS \
+LDFLAGS="-static $LDFLAGS" \
 CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
 CXXFLAGS=$CXXFLAGS \
@@ -155,5 +155,5 @@ $CONFIGURE \
 --with-curses=$DEST \
 --with-readline=$DEST
 
-$MAKE LIBS="-static -lcrypto -ldl -llzo2 -lz"
+$MAKE
 make install DESTDIR=$BASE/tinc
