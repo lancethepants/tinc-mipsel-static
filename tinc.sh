@@ -11,7 +11,7 @@ WGET="wget --prefer-family=IPv4"
 RPATH=/opt/lib
 DEST=$BASE/opt
 LDFLAGS="-L$DEST/lib -Wl,--gc-sections"
-CPPFLAGS="-I$DEST/include -I$DEST/include/ncurses"
+CPPFLAGS="-I$DEST/include -I$DEST/include/ncursesw"
 CFLAGS="-mtune=mips32 -mips32 -O3 -ffunction-sections -fdata-sections"
 CXXFLAGS=$CFLAGS
 CONFIGURE="./configure --prefix=/opt --host=mipsel-linux"
@@ -33,7 +33,8 @@ CFLAGS=$CFLAGS \
 CXXFLAGS=$CXXFLAGS \
 CROSS_PREFIX=mipsel-linux- \
 ./configure \
---prefix=/opt
+--prefix=/opt \
+--static
 
 $MAKE
 make install DESTDIR=$BASE
@@ -51,8 +52,7 @@ LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
 CXXFLAGS=$CXXFLAGS \
-$CONFIGURE \
---enable-shared
+$CONFIGURE
 
 $MAKE
 make install DESTDIR=$BASE
@@ -83,7 +83,7 @@ patch < openssl.patch
 
 ./Configure linux-mipsel \
 -ffunction-sections -fdata-sections  -Wl,--gc-sections \
---prefix=/opt shared zlib zlib-dynamic \
+--prefix=/opt zlib \
 --with-zlib-lib=$DEST/lib \
 --with-zlib-include=$DEST/include
 
@@ -104,14 +104,13 @@ CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
 CXXFLAGS=$CXXFLAGS \
 $CONFIGURE \
---with-shared \
+--enable-widec \
 --disable-database \
 --with-fallbacks=xterm
 
 $MAKE
 make install DESTDIR=$BASE
-ln -s libncurses.a $DEST/lib/libcurses.a
-ln -s libncurses.so $DEST/lib/libcurses.so
+ln -s libncursesw.a $DEST/lib/libcurses.a
 
 ############### #############################################################
 # LIBREADLINE # #############################################################
@@ -129,7 +128,8 @@ LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
 CXXFLAGS=$CXXFLAGS \
-$CONFIGURE
+$CONFIGURE \
+--disable-shared
 
 $MAKE
 make install DESTDIR=$BASE
@@ -143,11 +143,12 @@ $WGET http://www.tinc-vpn.org/packages/tinc-1.1pre10.tar.gz
 tar zxvf tinc-1.1pre10.tar.gz
 cd tinc-1.1pre10
 
-LDFLAGS="-static $LDFLAGS" \
+LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
 CFLAGS=$CFLAGS \
 CXXFLAGS=$CXXFLAGS \
 $CONFIGURE \
+--disable-hardening \
 --localstatedir=/var \
 --with-zlib=$DEST \
 --with-lzo=$DEST \
@@ -155,5 +156,5 @@ $CONFIGURE \
 --with-curses=$DEST \
 --with-readline=$DEST
 
-$MAKE
+$MAKE LIBS="-static -lcrypto -ldl -llzo2 -lz"
 make install DESTDIR=$BASE/tinc
