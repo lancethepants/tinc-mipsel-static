@@ -8,13 +8,13 @@ mkdir ~/tinc && cd ~/tinc
 BASE=`pwd`
 SRC=$BASE/src
 WGET="wget --prefer-family=IPv4"
-RPATH=/opt/lib
-DEST=$BASE/opt
+RPATH=/jffs/lib
+DEST=$BASE/jffs
 LDFLAGS="-L$DEST/lib -Wl,--gc-sections"
 CPPFLAGS="-I$DEST/include -I$DEST/include/ncursesw"
 CFLAGS="-mtune=mips32 -mips32 -O3 -ffunction-sections -fdata-sections"
 CXXFLAGS=$CFLAGS
-CONFIGURE="./configure --prefix=/opt --host=mipsel-linux"
+CONFIGURE="./configure --prefix=/jffs --host=mipsel-linux"
 MAKE="make -j`nproc`"
 mkdir $SRC
 
@@ -33,7 +33,7 @@ CFLAGS=$CFLAGS \
 CXXFLAGS=$CXXFLAGS \
 CROSS_PREFIX=mipsel-linux- \
 ./configure \
---prefix=/opt \
+--prefix=/jffs \
 --static
 
 $MAKE
@@ -44,9 +44,9 @@ make install DESTDIR=$BASE
 ####### #####################################################################
 
 mkdir $SRC/lzo && cd $SRC/lzo
-$WGET http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz
-tar zxvf lzo-2.06.tar.gz
-cd lzo-2.06
+$WGET http://www.oberhumer.com/opensource/lzo/download/lzo-2.08.tar.gz
+tar zxvf lzo-2.08.tar.gz
+cd lzo-2.08
 
 LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
@@ -62,9 +62,9 @@ make install DESTDIR=$BASE
 ########### #################################################################
 
 mkdir -p $SRC/openssl && cd $SRC/openssl
-$WGET http://www.openssl.org/source/openssl-1.0.1h.tar.gz
-tar zxvf openssl-1.0.1h.tar.gz
-cd openssl-1.0.1h
+$WGET http://www.openssl.org/source/openssl-1.0.1k.tar.gz
+tar zxvf openssl-1.0.1k.tar.gz
+cd openssl-1.0.1k
 
 cat << "EOF" > openssl.patch
 --- Configure_orig      2013-11-19 11:32:38.755265691 -0700
@@ -83,7 +83,7 @@ patch < openssl.patch
 
 ./Configure linux-mipsel \
 -ffunction-sections -fdata-sections  -Wl,--gc-sections \
---prefix=/opt zlib \
+--prefix=/jffs zlib \
 --with-zlib-lib=$DEST/lib \
 --with-zlib-include=$DEST/include
 
@@ -134,14 +134,37 @@ $CONFIGURE \
 $MAKE
 make install DESTDIR=$BASE
 
-######## ####################################################################
-# TINC # ####################################################################
-######## ####################################################################
+############ ################################################################
+# TINC 1.0 # ################################################################
+############ ################################################################
 
-mkdir $SRC/tinc && cd $SRC/tinc
-$WGET http://www.tinc-vpn.org/packages/tinc-1.1pre10.tar.gz
-tar zxvf tinc-1.1pre10.tar.gz
-cd tinc-1.1pre10
+mkdir $SRC/tinc1.0 && cd $SRC/tinc1.0
+$WGET http://www.tinc-vpn.org/packages/tinc-1.0.25.tar.gz
+tar zxvf tinc-1.0.25.tar.gz
+cd tinc-1.0.25
+
+LDFLAGS=$LDFLAGS \
+CPPFLAGS=$CPPFLAGS \
+CFLAGS=$CFLAGS \
+CXXFLAGS=$CXXFLAGS \
+$CONFIGURE \
+--disable-hardening \
+--localstatedir=/var \
+--with-zlib=$DEST \
+--with-lzo=$DEST \
+--with-openssl=$DEST \
+
+$MAKE LIBS="-static -lcrypto -ldl -llzo2 -lz"
+make install DESTDIR=$BASE/tinc1.0 LIBS="-static -lcrypto -llzo2 -lz"
+
+############ ################################################################
+# TINC 1.1 # ################################################################
+############ ################################################################
+
+mkdir $SRC/tinc1.1 && cd $SRC/tinc1.1
+$WGET http://www.tinc-vpn.org/packages/tinc-1.1pre11.tar.gz
+tar zxvf tinc-1.1pre11.tar.gz
+cd tinc-1.1pre11
 
 LDFLAGS=$LDFLAGS \
 CPPFLAGS=$CPPFLAGS \
@@ -157,4 +180,4 @@ $CONFIGURE \
 --with-readline=$DEST
 
 $MAKE LIBS="-static -lcrypto -ldl -llzo2 -lz"
-make install DESTDIR=$BASE/tinc
+make install DESTDIR=$BASE/tinc1.1 LIBS="-static -lcrypto -ldl -llzo2 -lz"
